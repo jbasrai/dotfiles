@@ -1,6 +1,7 @@
 call plug#begin('~/.vim/plugged')
 " colors
-Plug 'rafi/awesome-vim-colorschemes'
+" Plug 'rafi/awesome-vim-colorschemes'
+Plug 'arcticicestudio/nord-vim'
 " Plug 'junegunn/seoul256.vim'
 
 " syntax
@@ -10,18 +11,18 @@ Plug 'mxw/vim-jsx'
 Plug 'ElmCast/elm-vim'
 
 " utils
-Plug 'sjl/vitality.vim'
-Plug 'tmux-plugins/vim-tmux-focus-events'
+" Plug 'sjl/vitality.vim'
+" Plug 'tmux-plugins/vim-tmux-focus-events'
 
 " tools
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'mileszs/ack.vim'
 Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-fugitive'
+" Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'tmux-plugins/tmux-sensible'
+" Plug 'tmux-plugins/tmux-sensible'
 Plug 'junegunn/goyo.vim'
 Plug 'tpope/vim-surround'
 call plug#end()
@@ -50,11 +51,7 @@ set noexpandtab
 set nowrap
 set autowrite
 
-set background=light " or light if you prefer the light version
-let g:two_firewatch_italics=1
-colo two-firewatch
-
-let g:airline_theme='twofirewatch' " if you have Airline installed and want the associated theme
+colorscheme nord
 
 inoremap jk <esc>
 
@@ -79,7 +76,8 @@ noremap <leader>h :nohl<cr>
 noremap <leader>w :set nowrap<cr>
 noremap <leader>q :set wrap<cr>
 noremap <leader>j :join<cr>
-noremap <leader>, $%
+noremap <leader>, :call search('^'. matchstr(getline('.'), '\(^\s*\)') .'\%<' . line('.') . 'l\S', 'be')<CR>
+noremap <leader>. :call search('^'. matchstr(getline('.'), '\(^\s*\)') .'\%>' . line('.') . 'l\S', 'e')<CR>
 noremap <leader>< %
 noremap <leader>l :set list<cr>
 noremap <leader>; :set nolist<cr>
@@ -88,6 +86,9 @@ noremap <leader>r :redo<cr>
 noremap <leader>nw *
 noremap <leader>pw #
 noremap <leader>> f>l
+nnoremap <leader>g gggqG<c-o><c-o>
+
+nnoremap <leader>nd :Goyo<cr>
 
 " motion / operator-pending {{{
 onoremap i, :normal t,vB<cr>
@@ -96,11 +97,17 @@ onoremap ;l :normal t:vB<cr>
 " }}}
 
 " open files
-nnoremap <leader>ov :botright split ~/.vimrc<cr>
-nnoremap <leader>cv ZZ:source ~/.vimrc<cr>
-nnoremap <leader>on :botright 50vnew ~/documents/notes.txt<cr>:set textwidth=45<cr>
-nnoremap <leader>ot :botright 100vnew ~/dev/gg-api/src/Router/Routes/Test.class.php<cr>
-nnoremap <leader>orbl :e ~/dev/gg-api/src/Tournament/Registration/BL.class.php<cr>
+nnoremap <leader>ov :botright split ~/code/dotfiles/.vimrc<cr>:leftabove vsplit ~/.vimrc<cr>:e<cr>
+nnoremap <leader>cv ZZZZ:source ~/.vimrc<cr>
+nnoremap <leader>oc :tabnew<cr>:e ~/code/jbasrai.github.io/catalog/index.html<cr>/qbtm<cr>kyyp^cit
+
+function! OpenCatalog()
+	execute "e ~/code/jbasrai.github.io/catalog/index.html"
+	execute "/qbtm"
+	execute "normal! kyyp^cit\<esc>l"
+	execute "startinsert"
+endfunction
+
 
 " all files {{{
 autocmd FocusLost * :wa
@@ -110,19 +117,37 @@ autocmd FocusLost * :wa
 autocmd FileType javascript,javascript.jsx iabbrev <buffer> log console.log
 " }}}
 
-" php {{{
-augroup filetype_php
+" markdown/text {{{
+augroup filetype_markdown
+	autocmd!
+	autocmd FileType markdown,text set wrap
+	autocmd FileType markdown,text set linebreak
+augroup END
+" }}}
+
+" elm {{{
+augroup filetype_elm
 	autocmd!
 
-	autocmd FileType php iabbrev <buffer> log \Logger::log
-	autocmd FileType php iabbrev <buffer> print print_r(json_encode
-
-	autocmd FileType php nnoremap <leader>nf :execute "normal! j/\\(public\\\\|private\\).*function\r"<cr>
-	autocmd FileType php nnoremap <leader>pf :execute "normal! k?\\(public\\\\|private\\).*function\r"<cr>
-	autocmd FileType php nnoremap <leader>sf /\(public\\|private\).*function 
-
-	autocmd BufWritePost *.php !gg-repo-sync
+	autocmd FileType elm set tabstop=2
+	autocmd FileType elm set shiftwidth=2
+	autocmd FileType elm set expandtab
 augroup END
+" }}}
+
+" php {{{
+" augroup filetype_php
+" 	autocmd!
+" 
+" 	autocmd FileType php iabbrev <buffer> log \Logger::log
+" 	autocmd FileType php iabbrev <buffer> print print_r(json_encode
+" 
+" 	autocmd FileType php nnoremap <leader>nf :execute "normal! j/\\(public\\\\|private\\).*function\r"<cr>
+" 	autocmd FileType php nnoremap <leader>pf :execute "normal! k?\\(public\\\\|private\\).*function\r"<cr>
+" 	autocmd FileType php nnoremap <leader>sf /\(public\\|private\).*function 
+" 
+" 	autocmd BufWritePost *.php !gg-repo-sync
+" augroup END
 " }}}
 
 " vim {{{
